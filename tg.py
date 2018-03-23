@@ -22,7 +22,7 @@ def help(message):
 	if not message.chat.username in usernames:
 		bot.send_message(message.chat.id, 'пішов нахуй')
 		return
-	msg = 'Я умею делать следующие вещи:\n/get_animes - получить текущие анимки со статусом watching'
+	msg = 'Я умею делать следующие вещи:\n/get_animes - получить текущие анимки со статусом watching\n/pause - пауза\n/play - воспроизвести\n/update_ep - обновить кол-во просмотренных эпизодов'
 
 	bot.send_message(message.chat.id, msg)
 
