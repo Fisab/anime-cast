@@ -4,7 +4,7 @@ import time
 cast = None
 mc = None
 
-def cast(link):
+def init():
 	global cast
 	global mc
 
@@ -12,14 +12,30 @@ def cast(link):
 	if len(chromecasts) > 0:
 		cast = chromecasts[0]
 		mc = cast.media_controller
-		mc.play_media(video, 'video/mp4')
-		mc.block_until_active()
-
 		return True
 	return False
 
+def cast(link):
+	if mc == None:
+		res = init()
+
+	mc.play_media(link, 'video/mp4')
+	mc.block_until_active()
+
+
 def pause():
+	if mc == None:
+		res = init()
+
 	mc.pause()
 
 def play():
+	if mc == None:
+		res = init()
+
 	mc.play()
+
+def stop():
+	if mc == None:
+		res = init()
+	mc.stop()

@@ -41,3 +41,6 @@ def drop_anime(id, num_ep):
 def complete_anime(id, num_ep):
 	update(2, num_ep, id)
 
+
+if __name__ == '__main__':
+	update_anime(22199, 2)

@@ -22,19 +22,15 @@ def help(message):
 	if not message.chat.username in usernames:
 		bot.send_message(message.chat.id, 'пішов нахуй')
 		return
-	msg = 'Я умею делать следующие вещи:\n/get_animes - получить текущие анимки со статусом watching\n/pause - пауза\n/play - воспроизвести\n/update_ep - обновить кол-во просмотренных эпизодов'
+	msg = 'Я умею делать следующие вещи:\n/get_animes - получить текущие анимки со статусом watching'
 
 	bot.send_message(message.chat.id, msg)
 
-
-@bot.message_handler(commands=['get_animes'])
-def get_animes(message):
-	if not message.chat.username in usernames:
-		bot.send_message(message.chat.id, 'пішов нахуй')
-		return
+def init_list():
 	global data
 	animes = mal.get_current_watching()
 	data = []
+	msg = ''
 	for i in animes:
 		# img = mal.get_img(i['anime_url']) high size img
 		data.append({
@@ -45,8 +41,34 @@ def get_animes(message):
 			'name': i['anime_title'],
 			'anime_id': i['anime_id']
 		})
-		msg += 'id - ' + str(len(data)-1) + '; ' + i['anime_title'] + ' ' + str(i['num_watched_episodes']) + '/' + str(i['anime_num_episodes']) + '\n'# + i['anime_image_path'] + '\n' image if need
-		# bot.send_message(message.chat.id, msg)
+
+@bot.message_handler(commands=['get_animes'])
+def get_animes(message):
+	if not message.chat.username in usernames:
+		bot.send_message(message.chat.id, 'пішов нахуй')
+		return
+
+	init_list()
+	global data
+	msg = ''
+	for i in data:
+		msg += 'id - ' + str(data.index(i)) + '; ' + i['name'] + ' ' + str(i['num_watched_episodes']) + '/' + str(i['anime_num_episodes']) + '\n'# + i['anime_image_path'] + '\n' image if need
+	# global data
+	# animes = mal.get_current_watching()
+	# data = []
+	# msg = ''
+	# for i in animes:
+	# 	# img = mal.get_img(i['anime_url']) high size img
+	# 	data.append({
+	# 		'anime_num_episodes': i['anime_num_episodes'],
+	# 		'num_watched_episodes': i['num_watched_episodes'],
+	# 		'url': i['anime_url'],
+	# 		'img': i['anime_image_path'],
+	# 		'name': i['anime_title'],
+	# 		'anime_id': i['anime_id']
+	# 	})
+	# 	msg += 'id - ' + str(len(data)-1) + '; ' + i['anime_title'] + ' ' + str(i['num_watched_episodes']) + '/' + str(i['anime_num_episodes']) + '\n'# + i['anime_image_path'] + '\n' image if need
+	# 	# bot.send_message(message.chat.id, msg)
 	bot.send_message(message.chat.id, msg)
 
 	sent = bot.send_message(message.chat.id, 'Выберите номер аниме. -1 - отмена')
@@ -61,7 +83,13 @@ def choose_episode(message):
 		url = 'https://play.shikimori.org/animes/' + str(choosed_anime['anime_id']) + '/video_online/' + str(episode)
 
 		video_src = shik.get_link_from_shik(url)#vk
+
+		if video_src == False:#some video starts zID idk all structure
+			url = 'https://play.shikimori.org/animes/z' + str(choosed_anime['anime_id']) + '/video_online/' + str(episode)
+			video_src = shik.get_link_from_shik(url)#vk
+
 		link = get_video.get_link(video_src)
+
 
 		result = cast.cast(link)
 
@@ -90,11 +118,19 @@ def set_pause(message):
 @bot.message_handler(commands=['update_ep'])
 def update_anime(message):
 	sent = bot.send_message(message.chat.id, 'Введи id анимки')
-	bot.register_next_step_handler(sent, choose_episode)
+	bot.register_next_step_handler(sent, update_anime1)
 
 def update_anime1(message):
+	# if len(data) == 0:
+	init_list()
 	choosed_anime = data[int(message.text)]
 	mal.update_anime(choosed_anime['anime_id'], choosed_anime['num_watched_episodes'] + 1)
+	bot.send_message(message.chat.id, str(choosed_anime['anime_id']) + ' ты посмотрел столько эпизодов: ' + str(choosed_anime['num_watched_episodes']))
+
+@bot.message_handler(commands=['stop'])
+def stop(message):
+	cast.stop()
+	bot.send_message(message.chat.id, 'Выключила')
 
 while True:
 	try:
