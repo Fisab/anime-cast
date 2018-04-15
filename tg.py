@@ -8,6 +8,8 @@ import shik
 import cast
 import traceback
 
+import youtube
+
 config = json.load(open('data.json'))
 
 token = config['tg']
@@ -136,7 +138,18 @@ def rewind(message):
 def rewind1(message):
 	cast_.seek(-90)
 	bot.send_message(message.chat.id, 'Перемотала назад на 1 минуту')
+
 #
+
+def start_panel(message):
+	keyboard = telebot.types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
+
+	btn_anime = telebot.types.KeyboardButton(text='/get_animest')
+	btn_music = telebot.types.KeyboardButton(text='/music')
+
+	keyboard.add(btn_anime, btn_music)
+
+	bot.send_message(message.chat.id, "Стартовая панель:", reply_markup=keyboard)
 
 def control_panel(message):
 	keyboard = telebot.types.ReplyKeyboardMarkup(row_width=3, resize_keyboard=True)
@@ -153,6 +166,20 @@ def control_panel(message):
 	keyboard.add(btn_back, btn_forward)
 
 	bot.send_message(message.chat.id, "Панель управления:", reply_markup=keyboard)
+
+#
+
+@bot.message_handler(commands=['s', 'start'])
+def start(message):
+	start_panel(message)
+
+@bot.message_handler(commands=['music'])
+def music(message):
+	cast_.stop()
+	time.sleep(1)
+	link = youtube.get_rand_video()
+	result = cast_.cast(link)
+	control_panel(message)
 
 while True:
 	try:

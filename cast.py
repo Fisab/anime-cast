@@ -1,5 +1,6 @@
 import pychromecast
 import time
+from pychromecast.controllers.youtube import YouTubeController
 
 class Cast:
 	def init(self):
@@ -14,6 +15,7 @@ class Cast:
 	def __init__(self):
 		self.watching = False
 		self.ready = False
+		self.yt = None
 
 		res = self.init()
 		if res == True:
@@ -23,7 +25,6 @@ class Cast:
 		if self.ready == True:
 			self.mc.play_media(link, 'video/mp4')
 			self.mc.block_until_active()
-
 			self.watching = True
 
 			return True
@@ -55,3 +56,14 @@ class Cast:
 			self.mc.seek(new_time)
 			return True
 		return False
+
+	def cast_youtube(self, video_id):
+		if self.yt == None:
+			yt = YouTubeController()
+			self.cast_.register_handler(yt)
+		yt.play_video(video_id)
+		return True
+
+if __name__ == '__main__':
+	c = Cast()
+	mc
