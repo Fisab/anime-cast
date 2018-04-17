@@ -19,20 +19,36 @@ def get_vk_video(url, resolution):
 	av_res = re.findall(r'\.[0-9]{3,4}\.', r.text)
 	for i in range(len(av_res)):
 		av_res[i] = int(av_res[i].replace('.', ''))
-	data = re.search(r'var playerParams =.*};', r.text).group().replace(';','').replace('var playerParams =','')
-	data = json.loads(data)
 
-	links = {}
-	for i in quality:
-		for j in data['params']:
-			if 'url%i' % i in j:
-				links[str(i)] = j['url%i' % i]
+	data = re.search(r'var playerParams =.*};', r.text)
+	if data != None:
+		data = data.group().replace(';','').replace('var playerParams =','')
+		data = json.loads(data)
 
-	if resolution == 'max':
-	 	return links[max(links.keys())]
+		links = {}
+		for i in quality:
+			for j in data['params']:
+				if 'url%i' % i in j:
+					links[str(i)] = j['url%i' % i]
 
-	elif str(resolution) in links.keys():
-		return links[resolution]
+		if resolution == 'max':
+			return links[max(links.keys())]
+
+		elif str(resolution) in links.keys():
+			return links[resolution]
+	else:
+		data = re.search(r'src=\".*mp4\?', r.text).group().split('"')
+		links = {}
+		for i in data:
+			if i.find('https') != -1:
+				for j in quality:
+					if i.find(str(j)) != -1:
+						links[str(j)] = i
+		if resolution == 'max':
+			return links[max(links.keys())]
+
+		elif str(resolution) in links.keys():
+			return links[resolution]
 		
 	return None
 
@@ -53,6 +69,9 @@ def get_link(url, name_anime):
 		link = get_vk_video(url, 'max')
 		
 		return link
+
+if __name__ == '__main__':
+	print(get_vk_video('https://vk.com/video_ext.php?oid=49291644&id=171605810&hash=8570f75f81b3ed48', 'max'))
 
 # http://sovetromantica.com/embed/episode_438_13-dubbed
 
