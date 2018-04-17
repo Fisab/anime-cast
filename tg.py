@@ -10,7 +10,11 @@ import traceback
 
 import youtube
 
+from telebot import apihelper
+
+
 config = json.load(open('data.json'))
+apihelper.proxy = {'https': config['proxy']}
 
 token = config['tg']
 
@@ -71,14 +75,14 @@ def choose_episode(message):
 
 		episode = choosed_anime['num_watched_episodes'] + 1
 		url = 'https://play.shikimori.org/animes/' + str(choosed_anime['anime_id']) + '/video_online/' + str(episode)
-		print('Try get through normal id')
 
 		video_src = shik.get_link_from_shik(url)#vk
+		print('Try get through normal id', video_src)
 
 		if video_src == False:#some video starts zID idk all structure
 			url = 'https://play.shikimori.org/animes/z' + str(choosed_anime['anime_id']) + '/video_online/' + str(episode)
 			video_src = shik.get_link_from_shik(url)#vk
-			print('Try get through z id')
+			print('Try get through z id', video_src)
 
 		# print(video_src, url)
 		link = get_video.get_link(video_src, choosed_anime['name'])
@@ -144,7 +148,7 @@ def rewind1(message):
 def start_panel(message):
 	keyboard = telebot.types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
 
-	btn_anime = telebot.types.KeyboardButton(text='/get_animest')
+	btn_anime = telebot.types.KeyboardButton(text='/get_animes')
 	btn_music = telebot.types.KeyboardButton(text='/music')
 
 	keyboard.add(btn_anime, btn_music)

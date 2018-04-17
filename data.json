@@ -3,5 +3,7 @@
 	"password": "",
 
 	"tg": "",
-	"vk_token": ""
+	"vk_token": "",
+
+	"proxy": ""
 }
