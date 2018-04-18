@@ -5,5 +5,9 @@
 	"tg": "",
 	"vk_token": "",
 
-	"proxy": ""
+	"proxy": "",
+	
+	"love_voices": [
+		"AniLibria"
+	]
 }

@@ -69,10 +69,3 @@ def get_link(url, name_anime):
 		link = get_vk_video(url, 'max')
 		
 		return link
-
-if __name__ == '__main__':
-	print(get_vk_video('https://vk.com/video_ext.php?oid=49291644&id=171605810&hash=8570f75f81b3ed48', 'max'))
-
-# http://sovetromantica.com/embed/episode_438_13-dubbed
-
-# https://chitoge.sovetromantica.com/anime/438_grancrest-senki/episodes/dubbed/episode_13.mp4
