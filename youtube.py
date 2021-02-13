@@ -4,12 +4,13 @@ import requests
 
 videos = json.load(open('youtube.json'))
 
+
 def get_rand_video():
-	#for some videos need signature idk where get its and i just ignore this vides
-	#i dont make it through pychromecast because there issue and it dont start play video(only show splash screen)
+	# for some videos need signature idk where get its and i just ignore this vides
+	# i dont make it through pychromecast because there issue and it dont start play video(only show splash screen)
 	r = [{'sp': 0}]
-	while 'sp' in r[0]:#check is need signature
-		id =  videos['love_videos'][randint(0, len(videos['love_videos'])-1)]
+	while 'sp' in r[0]:  # check is need signature
+		id = videos['love_videos'][randint(0, len(videos['love_videos']) - 1)]
 		url = 'https://you-link.herokuapp.com/?url=https://www.youtube.com/watch?v=' + id
 
 		r = requests.get(url).json()
