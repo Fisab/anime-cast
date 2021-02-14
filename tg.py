@@ -1,16 +1,15 @@
+# DEPRECATED
+
 import telebot
-import json
-import mal
 import time
 
-import get_video
 import cast
 import traceback
 
 import youtube
 
 import config
-from plugins import animego
+from plugins import animego, mal
 
 config_obj = config.Config()
 bot = telebot.TeleBot(config_obj.telegtam_token)
@@ -178,6 +177,10 @@ def control_panel(message):
 	btn_back = telebot.types.KeyboardButton(text='/back')
 
 	keyboard.add(btn_back, btn_forward)
+
+	btn_update_ep = telebot.types.KeyboardButton(text='/update_ep')
+
+	keyboard.add(btn_update_ep)
 
 	bot.send_message(message.chat.id, "Панель управления:", reply_markup=keyboard)
 

@@ -21,6 +21,10 @@ class Config:
 	def mal_cookie(self):
 		return self.__config['mal_cookie']
 
+	@property
+	def telegram_access_list(self):
+		return self.__config['telegram_access_list']
+
 
 if __name__ == '__main__':
 	c = Config()

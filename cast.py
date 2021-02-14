@@ -4,9 +4,11 @@ from pychromecast.controllers.youtube import YouTubeController
 
 
 class Cast:
-	def init(self):
+	def init(self, friendly_name='big room'):
 		chromecasts, _ = pychromecast.get_chromecasts()
 		chromecasts = [cc for cc in chromecasts if cc.device.model_name == 'Chromecast']
+		if friendly_name is not None:
+			chromecasts = [cc for cc in chromecasts if cc.device.friendly_name == friendly_name]
 		if len(chromecasts) > 0:
 			self.cast_ = chromecasts[0]
 			self.mc = self.cast_.media_controller
@@ -19,16 +21,21 @@ class Cast:
 		self.ready = False
 		self.yt = None
 
+		self.cast_ = None
+		self.mc = None
+
 		res = self.init()
 		if res is True:
 			self.ready = True
 
+	@staticmethod
+	def get_available_chromecasts():
+		chromecasts, _ = pychromecast.get_chromecasts()
+		return [cc.device.friendly_name for cc in chromecasts if cc.device.model_name == 'Chromecast']
+
 	def cast(self, link):
 		if self.ready is True:
-			print('Waiting')
 			self.cast_.wait()
-			print(self.cast_.device, 'device')
-			print(self.cast_.status, 'status')
 			self.mc.play_media(link, 'video/mp4')
 			self.mc.block_until_active()
 			self.watching = True
@@ -73,9 +80,10 @@ class Cast:
 
 if __name__ == '__main__':
 	c = Cast()
-	c.init()
-	print(c.ready)
-	c.cast('https://cloud.kodik-cdn.com/animetvseries/f5506632860aae587052161f800f1e990445d2f0/176a969a6978897de1a9f1f8f920ffe1:2021021405/480.mp4')
+	print(c.get_available_chromecasts())
+	# c.init()
+	# print(c.ready)
+	# c.cast('https://cloud.kodik-cdn.com/animetvseries/f5506632860aae587052161f800f1e990445d2f0/176a969a6978897de1a9f1f8f920ffe1:2021021405/480.mp4')
 	# c.stop()
 	# time.sleep(2)
 	# c.pause()

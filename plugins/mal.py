@@ -7,7 +7,7 @@ config_obj = config.Config()
 BASE = 'https://myanimelist.net'
 
 
-def get_current_watching():
+def __get_current_watching():
 	url = f'{BASE}/animelist/{config_obj.mal_auth["login"]}/load.json?offset=0&status=1'  # current watching
 
 	r = requests.get(url)
@@ -32,9 +32,8 @@ def update(id, episode):
 		'csrf_token': config_obj.mal_token
 	}
 	headers = {
-		'cookie': config_obj.mal_cookie,
+		'cookie': config_obj.mal_cookie
 	}
-
 
 	r = requests.post(
 		'https://myanimelist.net/ownlist/anime/edit.json',
@@ -85,6 +84,24 @@ def describe_anime(id):
 	result['year'] = [int(s) for s in result['premiered'].split() if s.isdigit()][0]
 
 	return result
+
+
+def get_current_watching():
+	current_watching = []
+
+	animes = __get_current_watching()
+	for anime in animes:
+		# img = mal.get_img(i['anime_url']) high size img
+		current_watching.append({
+			'anime_num_episodes': anime['anime_num_episodes'],
+			'num_watched_episodes': anime['num_watched_episodes'],
+			'url': anime['anime_url'],
+			'img': anime['anime_image_path'],
+			'name': anime['anime_title'],
+			'anime_id': anime['anime_id']
+		})
+
+	return current_watching
 
 
 if __name__ == '__main__':
