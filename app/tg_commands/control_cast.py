@@ -9,7 +9,7 @@ def control_keyboard():
 	return [
 		['/stop', '/play', '/pause'],
 		['/back', '/forw'],
-		['/update_ep']
+		['/update_ep', '/get_animes']
 	]
 
 

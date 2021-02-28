@@ -7,10 +7,10 @@ from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
 
 from tg_commands import authorization
 from tg_commands.control_cast import control_keyboard
-from tg_commands.base.tg_mal import BaseTgMal
+from tg_commands.base.tg_mal import MalFetcher
 
 
-class UpdateEpisode(BaseTgMal):
+class UpdateEpisode(MalFetcher):
 	def __init__(self):
 		super().__init__()
 		self._current_watching = []

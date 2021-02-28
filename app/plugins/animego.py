@@ -1,6 +1,7 @@
 import requests
 from lxml import html
 import json
+import re
 
 
 class Site:
@@ -71,7 +72,28 @@ class Site:
 			return
 		return self.get_kodif_info(kodik_link[0])
 
-	def search(self, keyword, need_year, episode):
+	@staticmethod
+	def get_published_episodes(url):
+		params = (
+			('type', 'anime'),
+		)
+		response = requests.get(
+			url,
+			params=params,
+			headers={
+				'x-requested-with': 'XMLHttpRequest'
+			}
+		)
+		data = response.json()
+		tree = html.fromstring(data['content'])
+		text = ' '.join([i.replace('\n', '') for i in tree.text_content().split(' ') if i not in ['', '\n']])
+		try:
+			publish_episodes = re.findall(r'Эпизоды \d{1,4}', text)[0].split(' ')[1]
+			return publish_episodes
+		except:
+			pass
+
+	def search(self, keyword, need_year, episode=None):
 		url = f'{self._base}/search/all?q={keyword}'
 		page = requests.get(url)
 		xpath_anime_block = '//div[@class="animes-grid-item-body card-body px-0"]'
@@ -79,24 +101,31 @@ class Site:
 		tree = html.fromstring(page.text)
 
 		blocks = tree.xpath(xpath_anime_block)
-
+		if len(blocks) == 0:
+			return {}
 		for block in blocks:
 			try:
 				year = block.xpath('.//span[@class="anime-year"]')[0].text_content()
 			except:
 				# там в конце идут уже не ссылки на аниме, а на людей
-				return
+				return {}
 			attribs = block.getchildren()[1].xpath('.//a')[0].attrib
+			attribs['published_episodes'] = self.get_published_episodes(attribs['href'])
 			attribs['id'] = attribs['href'].split('-')[-1]
 			if need_year == int(year):
-				attribs['url'] = self.get_link(attribs['id'], episode)
+				if episode is not None:
+					attribs['url'] = self.get_link(attribs['id'], episode)
 				return attribs
 
 
 if __name__ == '__main__':
-	site = Site()
-	result = site.search('naruto', 2002, 31)
+	site = Site()  # 5-toubun no Hanayome ∬
+	# result = site.search('naruto', 2002, 31)
+	result = site.search('пять невест', 2021)
 	print(result)
+	# print(site.describe(result['href']))
+
 	# {'href': 'https://animego.org/anime/naruto-102', 'title': 'Наруто', 'id': '102', 'url': 'https://cloud.kodik-cdn.com/animetvseries/b4f6777c19529f5f6b5da082fafa608086c1090a/c68474974bdc9f04ef703826c4e64773:2021021406/480.mp4'}
+	# {'site_anime_id': None, 'name': 'Naruto', 'anime_id': 20, 'episode': 48, 'year': 2002}
 	# url = site.get_link(102, episode=30)
 	# print(url)

@@ -6,6 +6,8 @@
 	"mal_token": "",
 	"mal_cookie": "MALSESSIONID={some session_id from myanimelist}; is_logged_in=1;",
 
+    "alice_uid": ""
+
 	"telegram_token": "",
 	"telegram_access_list": [
 

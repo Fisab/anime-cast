@@ -3,7 +3,7 @@ import helpers
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
 
 
-class BaseTgMal:
+class MalFetcher:
 	def __init__(self):
 		self._current_watching = []
 		self.mal_prefix = 'https://myanimelist.net'

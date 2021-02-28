@@ -77,10 +77,17 @@ class Cast:
 		yt.play_video(video_id)
 		return True
 
+	def set_volume(self, volume):
+		if volume > 1:
+			return
+		self.cast_.set_volume(volume)
+		return True
+
 
 if __name__ == '__main__':
 	c = Cast()
-	print(c.get_available_chromecasts())
+	# print(c.get_available_chromecasts())
+
 	# c.init()
 	# print(c.ready)
 	# c.cast('https://cloud.kodik-cdn.com/animetvseries/f5506632860aae587052161f800f1e990445d2f0/176a969a6978897de1a9f1f8f920ffe1:2021021405/480.mp4')

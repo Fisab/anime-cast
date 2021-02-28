@@ -8,10 +8,10 @@ from plugins import mal
 
 from tg_commands import authorization
 from tg_commands.control_cast import control_keyboard
-from tg_commands.base.tg_mal import BaseTgMal
+from tg_commands.base.tg_mal import MalFetcher
 
 
-class GetAnimes(BaseTgMal):
+class GetAnimes(MalFetcher):
 	def __init__(self, cast, site):
 		super().__init__()
 		# make steps:

@@ -1,6 +1,11 @@
 import requests
 import json
 from lxml import html
+from tqdm import tqdm
+
+import sys
+sys.path.insert(0, "..")
+from helpers import retry
 import config
 
 config_obj = config.Config()
@@ -26,7 +31,7 @@ def get_img(link):  # high quality
 def update(id, episode):
 	data = {
 		'anime_id': id,
-		'status': 2,
+		'status': 1,  #2,
 		# 'score': 0,
 		'num_watched_episodes': episode,
 		'csrf_token': config_obj.mal_token
@@ -40,7 +45,8 @@ def update(id, episode):
 		data=json.dumps(data),
 		headers=headers
 	)
-	print(r.status_code)
+	# print(r.status_code)
+	return r.status_code == 200
 
 # def update(status, episode, id):
 # 	data = [
@@ -64,6 +70,7 @@ def update(id, episode):
 # 	update(2, num_ep, id)
 
 
+@retry
 def describe_anime(id):
 	url = f'{BASE}/anime/{id}'
 
@@ -90,7 +97,14 @@ def get_current_watching():
 	current_watching = []
 
 	animes = __get_current_watching()
-	for anime in animes:
+
+	keys = {
+		'High': 0,
+		'Medium': 1,
+		'Low': 2
+	}
+	# отсортируем по приоритету, чтобы вверху были самые приоритетные анимки
+	for anime in sorted(animes, key=lambda x: keys.get(x['priority_string'])):
 		# img = mal.get_img(i['anime_url']) high size img
 		current_watching.append({
 			'anime_num_episodes': anime['anime_num_episodes'],
@@ -104,8 +118,33 @@ def get_current_watching():
 	return current_watching
 
 
+def translate_anime_name(anime_data, site):
+	anime_info = describe_anime(anime_data['anime_id'])
+	result = site.search(
+		keyword=anime_data['name'],
+		need_year=anime_info.get('year')
+	)
+	return {
+		'ru_title': result.get('title'),
+		'year': anime_info.get('year'),
+		'site_anime_id': result.get('id'),
+		'published_episodes': result.get('published_episodes')
+	}
+
+
+def get_all_translated_animes(site):
+	animes = get_current_watching()
+	return [{
+		**anime,
+		**translate_anime_name(anime, site)
+	} for anime in tqdm(animes)]
+
+
 if __name__ == '__main__':
-	update(20, 30)
+	update(20, 99)
+	# translate_anime_name(20)
+
+
 	# a = get_current_watching()
 	# print(a)
 	# desc = describe_anime(20)
